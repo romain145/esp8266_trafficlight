@@ -8,8 +8,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid = "ssid";
-const char* password = "password";
+//const char* ssid = "ssid";
+//const char* password = "password";
+#include "wifi.h"
 
 String serverIP = "192.168.1.254";
 

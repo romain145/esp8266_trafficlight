@@ -5,8 +5,9 @@
 
 #include <ESP8266WiFi.h>
 
-const char* ssid = "ssid";
-const char* password = "password";
+//const char* ssid = "ssid";
+//const char* password = "password";
+#include "wifi.h"
 
 int redPin = 3;
 int yellowPin = LED_BUILTIN; // GPIO2 of ESP8266
