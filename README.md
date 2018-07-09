@@ -12,7 +12,7 @@ Based on the excellent tutorial:
 https://www.electronicshub.org/control-a-relay-using-esp8266-wifi-based
 
 Companion app:
-ai2.appinventor.mit.edu/?galleryId=5958187662573568
+http://ai2.appinventor.mit.edu/?galleryId=5958187662573568
 
 
 # TrafficLightTx
