@@ -4,6 +4,8 @@
 // TXO: GPIO3
 
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266WebServer.h>
 
 //const char* ssid = "ssid";
 //const char* password = "password";
@@ -15,7 +17,7 @@ int greenPin = 4;
 
 int i = 0;
 
-WiFiServer ESPserver(80);//Service Port
+ESP8266WebServer server(80);//Service Port
 
 void setup() 
 {
@@ -31,117 +33,102 @@ Serial.print("Connecting to: ");
 Serial.println(ssid);
 
 WiFi.begin(ssid, password);
-delay(1000);
-
-/*
- The following four line of the 
- code will assign a Static IP Address to 
- the ESP Module. If you do not want this, 
- comment out the following four lines.  
- */
-
-//IPAddress ip(192,168,1,254);   
-//IPAddress gateway(192,168,1,1);   
-//IPAddress subnet(255,255,255,0);   
-//WiFi.config(ip, gateway, subnet);
-//delay(5000);
 
 while (WiFi.status() != WL_CONNECTED) 
 {
-  delay(100);
+  delay(200);
   Serial.print("*");
 }
 Serial.println("");
-Serial.println("WiFi connected");
+Serial.print("WiFi connected: ");
+Serial.println(WiFi.localIP());
 
-// Start the server
-ESPserver.begin();
-Serial.println("Server started");
-
-// Print the IP address
 Serial.print("The URL to control ESP8266: ");
-Serial.print("http://");
-Serial.print(WiFi.localIP());
+
+if (MDNS.begin("trafficlight")) // Start the mDNS responder for trafficlight.local
+{
+  Serial.println("http://trafficlight.local");
+  MDNS.addService("http", "tcp", 80);
+}else{
+  Serial.println("Error setting up MDNS responder!");
 }
+
+server.on("/", handleRoot);               // Call the 'handleRoot' function when a client requests URI "/"
+server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
+
+server.on("/REDON", handleREDON);
+server.on("/REDOFF", handleREDOFF);
+server.on("/YELLOWON", handleYELLOWON);
+server.on("/YELLOWOFF", handleYELLOWOFF);
+server.on("/GREENON", handleGREENON);
+server.on("/GREENOFF", handleGREENOFF);
+server.on("/ALLOFF", handleALLOFF);
+
+server.begin(); // Actually start the server
+
+} // void setup()
 
 void loop() 
 {
-// Check if a client has connected
-WiFiClient client = ESPserver.available();
-if (!client) 
-{
-  return;
+  server.handleClient();
 }
 
-// Wait until the client sends some data
-Serial.println("New Client");
-i=0;
-while(!client.available())
-{
-  delay(100);
-  if(i++>10)
-  {
-    Serial.println("Client Timeout");
-    client.stop();
-    return;
-  }
+void handleRoot() {
+  server.send(200, "text/html", "<a href=\"REDON\" style=\"font-size:50px\">REDON</a><br/>\
+                                 <a href=\"REDOFF\" style=\"font-size:50px\">REDOFF</a><br/><br/>\
+                                 <a href=\"YELLOWON\" style=\"font-size:50px\">YELLOWON</a><br/>\
+                                 <a href=\"YELLOWOFF\" style=\"font-size:50px\">YELLOWOFF</a><br/><br/>\
+                                 <a href=\"GREENON\" style=\"font-size:50px\">GREENON</a><br/>\
+                                 <a href=\"GREENOFF\" style=\"font-size:50px\">GREENOFF</a><br/><br/>\
+                                 <a href=\"ALLOFF\" style=\"font-size:50px\">ALLOFF</a>");
 }
 
-// Read the first line of the request
-String request = client.readStringUntil('\r');
-Serial.println(request);
-client.flush();
-
-client.println("HTTP/1.1 200 OK");
-client.println("Content-Type: text/html");
-client.println(""); //  IMPORTANT
-//client.println("<!DOCTYPE HTML>");
-//client.println("<html>");
+void handleNotFound(){
+  server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
+}
 
 // RED
-if (request.indexOf("/REDON") != -1) 
-{
+void handleREDON(){
   Serial.println("REDON");
-  client.print("REDON");
+  server.send(200, "text/plain", "REDON");
   digitalWrite(redPin, LOW);
-} 
-if (request.indexOf("/REDOFF") != -1)
-{
+}
+void handleREDOFF(){
   Serial.println("REDOFF");
-  client.print("REDOFF");
+  server.send(200, "text/plain", "REDOFF");
   digitalWrite(redPin, HIGH);
 }
 
 // YELLOW
-if (request.indexOf("/YELLOWON") != -1) 
-{
+void handleYELLOWON(){
   Serial.println("YELLOWON");
-  client.print("YELLOWON");
+  server.send(200, "text/plain", "YELLOWON");
   digitalWrite(yellowPin, LOW);
-} 
-if (request.indexOf("/YELLOWOFF") != -1)
-{
+}
+void handleYELLOWOFF(){
   Serial.println("YELLOWOFF");
-  client.print("YELLOWOFF");
+  server.send(200, "text/plain", "YELLOWOFF");
   digitalWrite(yellowPin, HIGH);
 }
 
 // GREEN
-if (request.indexOf("/GREENON") != -1) 
-{
+void handleGREENON(){
   Serial.println("GREENON");
-  client.print("GREENON");
+  server.send(200, "text/plain", "GREENON");
   digitalWrite(greenPin, LOW);
-} 
-if (request.indexOf("/GREENOFF") != -1)
-{
+}
+void handleGREENOFF(){
   Serial.println("GREENOFF");
-  client.print("GREENOFF");
+  server.send(200, "text/plain", "GREENOFF");
   digitalWrite(greenPin, HIGH);
 }
 
-delay(1);
-//client.stop();
-Serial.println("Client disconnected");
-Serial.println("");
+// ALLOFF
+void handleALLOFF(){
+  Serial.println("ALLOFF");
+  server.send(200, "text/plain", "ALLOFF");
+  digitalWrite(redPin, HIGH);
+  digitalWrite(yellowPin, HIGH);
+  digitalWrite(greenPin, HIGH);
 }
+
