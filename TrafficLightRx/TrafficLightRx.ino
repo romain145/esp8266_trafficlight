@@ -11,9 +11,10 @@
 //const char* password = "password";
 #include "wifi.h"
 
-int redPin = 3;
-int yellowPin = LED_BUILTIN; // GPIO2 of ESP8266
-int greenPin = 4;
+int redPin = D4;
+int yellowPin = D3; // LED_BUILTIN or pin #2 on ESP8266
+int greenPin = D2;
+int fourPin = D1;
 
 int i = 0;
 
@@ -24,7 +25,6 @@ void setup()
 Serial.begin(115200);
 pinMode(redPin, OUTPUT);
 pinMode(yellowPin, OUTPUT);
-digitalWrite(yellowPin, HIGH); // led off
 pinMode(greenPin, OUTPUT);
 
 Serial.println();
@@ -33,6 +33,11 @@ Serial.print("Connecting to: ");
 Serial.println(ssid);
 
 WiFi.begin(ssid, password);
+
+IPAddress ip(192,168,0,2);
+IPAddress gateway(192,168,0,1);
+IPAddress subnet(255,255,255,0);
+WiFi.config(ip, gateway, subnet);
 
 while (WiFi.status() != WL_CONNECTED) 
 {
@@ -91,44 +96,44 @@ void handleNotFound(){
 void handleREDON(){
   Serial.println("REDON");
   server.send(200, "text/plain", "REDON");
-  digitalWrite(redPin, LOW);
+  digitalWrite(redPin, HIGH);
 }
 void handleREDOFF(){
   Serial.println("REDOFF");
   server.send(200, "text/plain", "REDOFF");
-  digitalWrite(redPin, HIGH);
+  digitalWrite(redPin, LOW);
 }
 
 // YELLOW
 void handleYELLOWON(){
   Serial.println("YELLOWON");
   server.send(200, "text/plain", "YELLOWON");
-  digitalWrite(yellowPin, LOW);
+  digitalWrite(yellowPin, HIGH);
 }
 void handleYELLOWOFF(){
   Serial.println("YELLOWOFF");
   server.send(200, "text/plain", "YELLOWOFF");
-  digitalWrite(yellowPin, HIGH);
+  digitalWrite(yellowPin, LOW);
 }
 
 // GREEN
 void handleGREENON(){
   Serial.println("GREENON");
   server.send(200, "text/plain", "GREENON");
-  digitalWrite(greenPin, LOW);
+  digitalWrite(greenPin, HIGH);
 }
 void handleGREENOFF(){
   Serial.println("GREENOFF");
   server.send(200, "text/plain", "GREENOFF");
-  digitalWrite(greenPin, HIGH);
+  digitalWrite(greenPin, LOW);
 }
 
 // ALLOFF
 void handleALLOFF(){
   Serial.println("ALLOFF");
   server.send(200, "text/plain", "ALLOFF");
-  digitalWrite(redPin, HIGH);
-  digitalWrite(yellowPin, HIGH);
-  digitalWrite(greenPin, HIGH);
+  digitalWrite(redPin, LOW);
+  digitalWrite(yellowPin, LOW);
+  digitalWrite(greenPin, LOW);
 }
 
