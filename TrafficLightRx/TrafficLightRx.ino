@@ -11,8 +11,8 @@
 //const char* password = "password";
 #include "wifi.h"
 
-int redPin = D4;
-int yellowPin = D3; // LED_BUILTIN or pin #2 on ESP8266
+int redPin = D4;  // also LED_BUILTIN on ESP8266
+int yellowPin = D3;
 int greenPin = D2;
 int fourPin = D1;
 
@@ -34,8 +34,8 @@ Serial.println(ssid);
 
 WiFi.begin(ssid, password);
 
-IPAddress ip(192,168,0,2);
-IPAddress gateway(192,168,0,1);
+IPAddress ip(192,168,1,200);
+IPAddress gateway(192,168,1,1);
 IPAddress subnet(255,255,255,0);
 WiFi.config(ip, gateway, subnet);
 
