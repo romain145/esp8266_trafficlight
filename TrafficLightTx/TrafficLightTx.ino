@@ -39,20 +39,6 @@ Serial.print("Connecting to: ");
 Serial.println(ssid);
 
 WiFi.begin(ssid, password);
-delay(1000);
-
-/*
- The following four line of the 
- code will assign a Static IP Address to 
- the ESP Module. If you do not want this, 
- comment out the following four lines.  
- */
-
-IPAddress ip(192,168,1,199);   
-IPAddress gateway(192,168,1,1);   
-IPAddress subnet(255,255,255,0);   
-WiFi.config(ip, gateway, subnet);
-//delay(5000);
 
 while (WiFi.status() != WL_CONNECTED) 
 {

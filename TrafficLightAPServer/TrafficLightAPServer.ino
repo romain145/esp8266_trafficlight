@@ -50,12 +50,12 @@ void setup()
   Serial.printf("Now listening at IP %s, UDP port %d\n", WiFi.softAPIP().toString().c_str(), localUdpPort);
 
   server.on("/", handleRoot);               // Call the 'handleRoot' function
-  server.on("/REDON", handleREDON);
-  server.on("/REDOFF", handleREDOFF);
-  server.on("/YELLOWON", handleYELLOWON);
-  server.on("/YELLOWOFF", handleYELLOWOFF);
-  server.on("/GREENON", handleGREENON);
-  server.on("/GREENOFF", handleGREENOFF);
+  server.on("/RON", handleREDON);
+  server.on("/ROF", handleREDOFF);
+  server.on("/YON", handleYELLOWON);
+  server.on("/YOF", handleYELLOWOFF);
+  server.on("/GON", handleGREENON);
+  server.on("/GOF", handleGREENOFF);
   server.on("/ALLOFF", handleALLOFF);
 
   server.begin(); // Actually start the server
@@ -68,7 +68,7 @@ void loop()
   static int packetNumber=0;
 
   server.handleClient();
-  
+
   if (packetSize)
   {
     // receive incoming UDP packets
@@ -125,14 +125,46 @@ void loop()
   }
 }
 
+char * linkStr(int pin) {
+    char buf[66] = "<a href=\""; //9
+    if (pin == redPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "ROF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,000,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "RON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,000,000,0.1)\"></a>"); // +22
+        }
+    } else if (pin == yellowPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "YOF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,165,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "YON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,165,000,0.1)\"></a>"); // +22
+        }
+    } else if (pin == greenPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "GOF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "000,128,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "GON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "000,128,000,0.1)\"></a>"); // +22
+        }
+    }
+    return buf;
+}
+
+
 void handleRoot() {
-  server.send(200, "text/html", "<a href=\"REDON\" style=\"font-size:70px\">REDON</a><br/>\
-                                 <a href=\"REDOFF\" style=\"font-size:70px\">REDOFF</a><br/><br/>\
-                                 <a href=\"YELLOWON\" style=\"font-size:70px\">YELLOWON</a><br/>\
-                                 <a href=\"YELLOWOFF\" style=\"font-size:70px\">YELLOWOFF</a><br/><br/>\
-                                 <a href=\"GREENON\" style=\"font-size:70px\">GREENON</a><br/>\
-                                 <a href=\"GREENOFF\" style=\"font-size:70px\">GREENOFF</a><br/><br/>\
-                                 <a href=\"ALLOFF\" style=\"font-size:50px\">ALLOFF</a>");
+    char buf[436] = "<html><head><style>body{display:flex;flex-direction:column;align-items:center;}a{border-radius:50%;font-size:50px;width:30vw;height:30vw;}</style></head><body>"; //159
+
+    strcat(buf, linkStr(redPin)); // +70
+    strcat(buf, linkStr(yellowPin)); // +70
+    strcat(buf, linkStr(greenPin)); // +70
+    strcat(buf, "<a href=\"ALLOFF\" style=\"background-color:black;\"></a>"); // +53
+    strcat(buf, "</body></html>"); // +14
+    server.send(200, "text/html", buf);
 }
 
 void handleNotFound(){
@@ -142,44 +174,44 @@ void handleNotFound(){
 // RED
 void handleREDON(){
   Serial.println("REDON");
-  handleRoot();
   digitalWrite(redPin, HIGH);
+  handleRoot();
 }
 void handleREDOFF(){
   Serial.println("REDOFF");
-  handleRoot();
   digitalWrite(redPin, LOW);
+  handleRoot();
 }
 
 // YELLOW
 void handleYELLOWON(){
   Serial.println("YELLOWON");
-  handleRoot();
   digitalWrite(yellowPin, HIGH);
+  handleRoot();
 }
 void handleYELLOWOFF(){
   Serial.println("YELLOWOFF");
-  handleRoot();
   digitalWrite(yellowPin, LOW);
+  handleRoot();
 }
 
 // GREEN
 void handleGREENON(){
   Serial.println("GREENON");
-  handleRoot();
   digitalWrite(greenPin, HIGH);
+  handleRoot();
 }
 void handleGREENOFF(){
   Serial.println("GREENOFF");
-  handleRoot();
   digitalWrite(greenPin, LOW);
+  handleRoot();
 }
 
 // ALLOFF
 void handleALLOFF(){
   Serial.println("ALLOFF");
-  handleRoot();
   digitalWrite(redPin, LOW);
   digitalWrite(yellowPin, LOW);
   digitalWrite(greenPin, LOW);
+  handleRoot();
 }

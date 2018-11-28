@@ -11,7 +11,7 @@
 //const char* password = "password";
 #include "wifi.h"
 
-int redPin = D4;  // also LED_BUILTIN on ESP8266
+int redPin = D4; // LED_BUILTIN or pin #2 on ESP8266
 int yellowPin = D3;
 int greenPin = D2;
 int fourPin = D1;
@@ -34,8 +34,8 @@ Serial.println(ssid);
 
 WiFi.begin(ssid, password);
 
-IPAddress ip(192,168,1,200);
-IPAddress gateway(192,168,1,1);
+IPAddress ip(192,168,2,150);
+IPAddress gateway(192,168,2,1);
 IPAddress subnet(255,255,255,0);
 WiFi.config(ip, gateway, subnet);
 
@@ -61,12 +61,12 @@ if (MDNS.begin("trafficlight")) // Start the mDNS responder for trafficlight.loc
 server.on("/", handleRoot);               // Call the 'handleRoot' function when a client requests URI "/"
 server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
 
-server.on("/REDON", handleREDON);
-server.on("/REDOFF", handleREDOFF);
-server.on("/YELLOWON", handleYELLOWON);
-server.on("/YELLOWOFF", handleYELLOWOFF);
-server.on("/GREENON", handleGREENON);
-server.on("/GREENOFF", handleGREENOFF);
+server.on("/RON", handleREDON);
+server.on("/ROF", handleREDOFF);
+server.on("/YON", handleYELLOWON);
+server.on("/YOF", handleYELLOWOFF);
+server.on("/GON", handleGREENON);
+server.on("/GOF", handleGREENOFF);
 server.on("/ALLOFF", handleALLOFF);
 
 server.begin(); // Actually start the server
@@ -78,14 +78,46 @@ void loop()
   server.handleClient();
 }
 
+char * linkStr(int pin) {
+    char buf[66] = "<a href=\""; //9
+    if (pin == redPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "ROF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,000,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "RON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,000,000,0.1)\"></a>"); // +22
+        }
+    } else if (pin == yellowPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "YOF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,165,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "YON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "255,165,000,0.1)\"></a>"); // +22
+        }
+    } else if (pin == greenPin) {
+        if (digitalRead(pin) == HIGH) {
+            strcat(buf, "GOF\" style=\"background-color:rgba("); // +34
+            strcat(buf, "000,128,000,1.0)\"></a>"); // +22
+        } else {
+            strcat(buf, "GON\" style=\"background-color:rgba("); // +34
+            strcat(buf, "000,128,000,0.1)\"></a>"); // +22
+        }
+    }
+    return buf;
+}
+
+
 void handleRoot() {
-  server.send(200, "text/html", "<a href=\"REDON\" style=\"font-size:50px\">REDON</a><br/>\
-                                 <a href=\"REDOFF\" style=\"font-size:50px\">REDOFF</a><br/><br/>\
-                                 <a href=\"YELLOWON\" style=\"font-size:50px\">YELLOWON</a><br/>\
-                                 <a href=\"YELLOWOFF\" style=\"font-size:50px\">YELLOWOFF</a><br/><br/>\
-                                 <a href=\"GREENON\" style=\"font-size:50px\">GREENON</a><br/>\
-                                 <a href=\"GREENOFF\" style=\"font-size:50px\">GREENOFF</a><br/><br/>\
-                                 <a href=\"ALLOFF\" style=\"font-size:50px\">ALLOFF</a>");
+    char buf[438] = "<html><head><style>body{display:flex;flex-direction:column;align-items:center;}a{border-radius:50%;font-size:50px;width:400px;height:400px;}</style></head><body>"; //161
+
+    strcat(buf, linkStr(redPin)); // +70
+    strcat(buf, linkStr(yellowPin)); // +70
+    strcat(buf, linkStr(greenPin)); // +70
+    strcat(buf, "<a href=\"ALLOFF\" style=\"background-color:black;\"></a>"); // +53
+    strcat(buf, "</body></html>"); // +14
+    server.send(200, "text/html", buf);
 }
 
 void handleNotFound(){
@@ -136,4 +168,3 @@ void handleALLOFF(){
   digitalWrite(yellowPin, LOW);
   digitalWrite(greenPin, LOW);
 }
-
