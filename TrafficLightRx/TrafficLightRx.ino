@@ -11,8 +11,8 @@
 //const char* password = "password";
 #include "wifi.h"
 
-int redPin = D4;
-int yellowPin = D3; // LED_BUILTIN or pin #2 on ESP8266
+int redPin = D4; // LED_BUILTIN or pin #2 on ESP8266
+int yellowPin = D3;
 int greenPin = D2;
 int fourPin = D1;
 

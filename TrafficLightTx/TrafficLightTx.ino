@@ -12,13 +12,14 @@
 //const char* password = "password";
 #include "wifi.h"
 
-String serverIP = "192.168.1.254";
+String serverIP = "192.168.0.1";
 
 int ledPin = LED_BUILTIN; // GPIO2 of ESP8266;
 
-int redPin = 4;
-int yellowPin = 5;
-int greenPin = 6;
+int redPin = D4; // LED_BUILTIN or pin #2 on ESP8266
+int yellowPin = D3;
+int greenPin = D2;
+int fourPin = D1;
 
 int red_prev = 0;
 int yellow_prev = 0;
@@ -44,20 +45,6 @@ Serial.print("Connecting to: ");
 Serial.println(ssid);
 
 WiFi.begin(ssid, password);
-delay(1000);
-
-/*
- The following four line of the 
- code will assign a Static IP Address to 
- the ESP Module. If you do not want this, 
- comment out the following four lines.  
- */
-
-//IPAddress ip(192,168,1,254);   
-//IPAddress gateway(192,168,1,1);   
-//IPAddress subnet(255,255,255,0);   
-//WiFi.config(ip, gateway, subnet);
-//delay(5000);
 
 while (WiFi.status() != WL_CONNECTED) 
 {
