@@ -21,6 +21,16 @@ int green_prev = 0;
 
 int i = 0;
 
+void sendPacket(char* data)
+{
+  Udp.beginPacket(serverIP, serverPort);
+  Udp.write(data);
+  if(Udp.endPacket()==0){
+    Serial.println("Error pk");
+    while(1); // WDT restart in case of error
+  }
+}
+
 void setup() 
 {
 Serial.begin(115200);
@@ -51,26 +61,56 @@ delay(2000); // Delay before sending
 
 void loop()
 {
-  int packetSize = Udp.parsePacket();
-  char packet[10];
-  static int packetNumber=0;
+  int packetSize;
 
+  packetSize = Udp.parsePacket();
   if (packetSize)
   {
     Udp.read(incomingPacket, 255);
     //Serial.printf("%s %d\n", incomingPacket, packetNumber++);
   }
 
-  //for(packetNumber=0; packetNumber<100; packetNumber++){
-  Udp.beginPacket(serverIP, serverPort);
-  itoa(packetNumber, packet, 10);
-  Udp.write(packet);
-  if(Udp.endPacket()==0){
-    Serial.printf("Error pk %d\n", packetNumber);
-    while(1); // WDT restart in case of error
+  // RED
+  if(red_prev == 0 && !digitalRead(redPin))
+  {
+    red_prev = 1;
+    Serial.println("RON");
+    sendPacket("RON");
   }
-  Serial.printf("pk %d\n", packetNumber++);
+  if(red_prev == 1 && digitalRead(redPin))
+  {
+    red_prev = 0;
+    Serial.println("ROF");
+    sendPacket("ROF");
+  }
+  
+  // YELLOW
+  if(yellow_prev == 0 && !digitalRead(yellowPin))
+  {
+    yellow_prev = 1;
+    Serial.println("YON");
+    sendPacket("YON");
+  }
+  if(yellow_prev == 1 && digitalRead(yellowPin))
+  {
+    yellow_prev = 0;
+    Serial.println("YOF");
+    sendPacket("YOF");
+  }
+  
+  // GREEN
+  if(green_prev == 0 && !digitalRead(greenPin))
+  {
+    green_prev = 1;
+    Serial.println("GON");
+    sendPacket("GON");
+  }
+  if(green_prev == 1 && digitalRead(greenPin))
+  {
+    green_prev = 0;
+    Serial.println("GOF");
+    sendPacket("GOF");
+  }
   delay(10);
-  //}
-  //delay(5000);
-}
+
+} // end loop

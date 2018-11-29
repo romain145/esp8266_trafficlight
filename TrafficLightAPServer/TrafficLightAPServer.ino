@@ -82,33 +82,33 @@ void loop()
       incomingPacket[len-1] = 0;
     }
     //Serial.printf("UDP packet contents: %s\n", incomingPacket);
-    if(strcmp(incomingPacket, "REDON")==0){
-      Serial.println("REDON");
+    if(strcmp(incomingPacket, "RON")==0){
+      Serial.println("RON");
       digitalWrite(redPin, HIGH);
       return;
     }
-    if(strcmp(incomingPacket, "REDOFF")==0){
-      Serial.println("REDOFF");
+    if(strcmp(incomingPacket, "ROF")==0){
+      Serial.println("ROF");
       digitalWrite(redPin, LOW);
       return;
     }
-    if(strcmp(incomingPacket, "YELLOWON")==0){
-      Serial.println("YELLOWON");
+    if(strcmp(incomingPacket, "YON")==0){
+      Serial.println("YON");
       digitalWrite(yellowPin, HIGH);
       return;
     }
-    if(strcmp(incomingPacket, "YELLOWOFF")==0){
-      Serial.println("YELLOWOFF");
+    if(strcmp(incomingPacket, "YOF")==0){
+      Serial.println("YOF");
       digitalWrite(yellowPin, LOW);
       return;
     }
-    if(strcmp(incomingPacket, "GREENON")==0){
-      Serial.println("GREENON");
+    if(strcmp(incomingPacket, "GON")==0){
+      Serial.println("GON");
       digitalWrite(greenPin, HIGH);
       return;
     }
-    if(strcmp(incomingPacket, "GREENOFF")==0){
-      Serial.println("GREENOFF");
+    if(strcmp(incomingPacket, "GOF")==0){
+      Serial.println("GOF");
       digitalWrite(greenPin, LOW);
       return;
     }
@@ -173,36 +173,36 @@ void handleNotFound(){
 
 // RED
 void handleREDON(){
-  Serial.println("REDON");
+  Serial.println("RON");
   digitalWrite(redPin, HIGH);
   handleRoot();
 }
 void handleREDOFF(){
-  Serial.println("REDOFF");
+  Serial.println("ROF");
   digitalWrite(redPin, LOW);
   handleRoot();
 }
 
 // YELLOW
 void handleYELLOWON(){
-  Serial.println("YELLOWON");
+  Serial.println("YON");
   digitalWrite(yellowPin, HIGH);
   handleRoot();
 }
 void handleYELLOWOFF(){
-  Serial.println("YELLOWOFF");
+  Serial.println("YOF");
   digitalWrite(yellowPin, LOW);
   handleRoot();
 }
 
 // GREEN
 void handleGREENON(){
-  Serial.println("GREENON");
+  Serial.println("GON");
   digitalWrite(greenPin, HIGH);
   handleRoot();
 }
 void handleGREENOFF(){
-  Serial.println("GREENOFF");
+  Serial.println("GOF");
   digitalWrite(greenPin, LOW);
   handleRoot();
 }
