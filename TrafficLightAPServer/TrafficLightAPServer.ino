@@ -64,11 +64,18 @@ void setup()
 
 void loop()
 {
-  int packetSize = Udp.parsePacket();
+  int packetSize;
   static int packetNumber=0;
+  static int nbStationConnected=0;
+
+  if(nbStationConnected != WiFi.softAPgetStationNum()){
+    nbStationConnected = WiFi.softAPgetStationNum();
+    Serial.printf("Stations connected to soft-AP = %d\n", WiFi.softAPgetStationNum());
+  }
 
   server.handleClient();
 
+  packetSize = Udp.parsePacket();
   if (packetSize)
   {
     // receive incoming UDP packets
