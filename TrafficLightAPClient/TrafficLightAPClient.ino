@@ -10,15 +10,16 @@ WiFiUDP Udp;
 unsigned int localUdpPort = 4210;  // local port to listen on
 char incomingPacket[255];  // buffer for incoming packets
 
-// Bootloader 
+// Bootloader pin configuration at boot
+// For the ESP to boot properly, these states MUST be observed:
 // D8=GPIO15 must be LOW
-// D4=GPIO2 must be HIGH
+// D4=GPIO2=LED_BUILTIN must be HIGH
 // D3=GPIO0 must be HIGH
 
-int redPin = D4;  // also LED_BUILTIN on ESP8266
-int yellowPin = D3;
+int redPin = D5;
+int yellowPin = D1;
 int greenPin = D2;
-int fourPin = D1;
+//int fourPin = D1;
 
 int red_prev = 0;
 int yellow_prev = 0;
@@ -43,7 +44,7 @@ if (WiFi.localIP() == IPAddress(0, 0, 0, 0)) return 0;
 
 void sendPacket(char* data)
 {
-  Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+  Udp.beginPacket(serverIP, serverPort);
   Udp.write(data);
   if(Udp.endPacket()==0){
     Serial.println("Error pk");
